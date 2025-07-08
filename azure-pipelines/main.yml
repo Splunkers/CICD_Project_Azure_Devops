@@ -22,6 +22,8 @@ jobs:
         APP_PATH: "apps/app2"
 
   steps:
+    - checkout: self  # ✅ CHECKOUT YOUR CODE FIRST!
+
     - script: |
         echo "Packaging Splunk App: $(APP_NAME)"
         mkdir -p packaged
