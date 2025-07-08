@@ -32,9 +32,9 @@ jobs:
 
     - script: |
         echo "Deploying Splunk App: $(APP_NAME)"
-        curl -k -u "$(SPLUNK_USER):$(SPLUNK_PASSWORD)" \
-          https://$(SPLUNK_HOST):$(SPLUNK_PORT)/services/apps/local \
-          -F "name=@packaged/$(APP_NAME).spl" \
+        curl -v -k -u "$SPLUNK_USER:$SPLUNK_PASSWORD" \
+          "https://$SPLUNK_HOST:$SPLUNK_PORT/services/apps/local" \
+          -F "name=@packaged/$APP_NAME.spl" \
           -F "update=true"
       displayName: "Install $(APP_NAME) on Splunk"
       env:
