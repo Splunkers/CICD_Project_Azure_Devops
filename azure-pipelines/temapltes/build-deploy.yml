@@ -1,0 +1,30 @@
+parameters:
+  - name: appName
+    type: string
+
+jobs:
+  - job: BuildAndDeploy_${{ parameters.appName }}
+    displayName: Build & Deploy ${{ parameters.appName }}
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.x'
+
+      - script: |
+          pip install splunk-appinspect
+          splunk-appinspect inspect apps/${{ parameters.appName }} --mode precert --output-file results.json
+        displayName: "Run AppInspect"
+
+      - script: |
+          cd apps/${{ parameters.appName }}
+          tar -czvf ../../${{ parameters.appName }}.spl .
+        displayName: "Package .spl"
+
+      - script: |
+          curl -k -X POST "$(SPLUNK_BASE_URL)/services/apps/local" \
+               -H "$(SPLUNK_AUTH_HEADER)" \
+               -F "name=@${{ parameters.appName }}.spl" \
+               -F "update=true"
+        displayName: "Deploy to Splunk"
