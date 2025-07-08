@@ -3,21 +3,20 @@ trigger:
     include:
       - main
 
-variables:
-  SPLUNK_BASE_URL: 'https://9.223.112.231:8089/'
-  SPLUNK_AUTH_HEADER: 'Authorization: Bearer $(SPLUNK_TOKEN)'
+pool:
+  vmImage: 'ubuntu-latest'
 
-stages:
-  - stage: BuildAndDeployApps
-    jobs:
-      - job: LoopApps
-        strategy:
-          matrix:
-            app1:
-              APP_NAME: 'app1'
-            app2:
-              APP_NAME: 'app2'
-        steps:
-          - template: templates/build-deploy.yml
-            parameters:
-              appName: ${{ matrix.APP_NAME }}
+jobs:
+- job: BuildDeploy
+  displayName: Deploy Splunk Apps
+  strategy:
+    matrix:
+      App1:
+        APP_NAME: "app1"
+        APP_PATH: "apps/app1"
+      App2:
+        APP_NAME: "app2"
+        APP_PATH: "apps/app2"
+  steps:
+    - script: echo "Deploying $(APP_NAME) from $(APP_PATH)"
+      displayName: "Deploy $(APP_NAME)"
