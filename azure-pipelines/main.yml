@@ -25,3 +25,7 @@ jobs:
           -F "name=@$(APP_PATH)/app.spl" \
           -F "update=true"
       displayName: "Install $(APP_NAME) on Splunk"
+      env:
+        SPLUNK_USER: $(SPLUNK_USER)
+        SPLUNK_PASSWORD: $(SPLUNK_PASSWORD)
+        SPLUNK_HOST: $(SPLUNK_HOST)
