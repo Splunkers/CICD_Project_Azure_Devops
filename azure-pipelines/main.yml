@@ -6,6 +6,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  SPLUNK_PORT: '8089'
+
 jobs:
 - job: BuildDeploy
   displayName: Deploy Splunk Apps
@@ -17,12 +20,19 @@ jobs:
       App2:
         APP_NAME: "app2"
         APP_PATH: "apps/app2"
+
   steps:
     - script: |
+        echo "Packaging Splunk App: $(APP_NAME)"
+        mkdir -p packaged
+        tar -czvf packaged/$(APP_NAME).spl -C $(APP_PATH) .
+      displayName: "Package $(APP_NAME) to .spl"
+
+    - script: |
         echo "Deploying Splunk App: $(APP_NAME)"
-        curl -k -u $(SPLUNK_USER):$(SPLUNK_PASSWORD) \
-          https://$(SPLUNK_HOST):8089/services/apps/local \
-          -F "name=@$(APP_PATH)/app.spl" \
+        curl -k -u "$(SPLUNK_USER):$(SPLUNK_PASSWORD)" \
+          https://$(SPLUNK_HOST):$(SPLUNK_PORT)/services/apps/local \
+          -F "name=@packaged/$(APP_NAME).spl" \
           -F "update=true"
       displayName: "Install $(APP_NAME) on Splunk"
       env:
