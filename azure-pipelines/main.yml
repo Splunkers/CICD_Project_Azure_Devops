@@ -18,5 +18,10 @@ jobs:
         APP_NAME: "app2"
         APP_PATH: "apps/app2"
   steps:
-    - script: echo "Deploying $(APP_NAME) from $(APP_PATH)"
-      displayName: "Deploy $(APP_NAME)"
+    - script: |
+        echo "Deploying Splunk App: $(APP_NAME)"
+        curl -k -u $(SPLUNK_USER):$(SPLUNK_PASSWORD) \
+          https://$(SPLUNK_HOST):8089/services/apps/local \
+          -F "name=@$(APP_PATH)/app.spl" \
+          -F "update=true"
+      displayName: "Install $(APP_NAME) on Splunk"
